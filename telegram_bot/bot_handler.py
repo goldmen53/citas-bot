@@ -516,71 +516,57 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-async def main():
-    """Главная функция запуска бота"""
-    logger.info("🤖 Инициализация Telegram бота...")
-
-    # Инициализируем БД
-    init_databases()
-
-    # Создаём приложение
-    app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-
-    # Регистрация команды
-    register_conversation = ConversationHandler(
-        entry_points=[CommandHandler("register", register_start)],
-        states={
-            WAITING_FOR_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, register_name)],
-            WAITING_FOR_EMAIL: [MessageHandler(filters.TEXT & ~filters.COMMAND, register_email)],
-            WAITING_FOR_PASSPORT: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, register_passport)
-            ],
-            WAITING_FOR_YEAR: [MessageHandler(filters.TEXT & ~filters.COMMAND, register_year)],
-        },
-        fallbacks=[CommandHandler("cancel", lambda u, c: ConversationHandler.END)],
-    )
-
-    # Добавляем обработчики
-    app.add_handler(CommandHandler("start", start_command))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(register_conversation)
-    app.add_handler(CommandHandler("search", search_command))
-    app.add_handler(CallbackQueryHandler(visa_type_callback, pattern="^visa_"))
-    app.add_handler(CommandHandler("status", status_command))
-    app.add_handler(CommandHandler("stop", stop_command))
-
-    # Обработчик ошибок
-    app.add_error_handler(error_handler)
-
-    logger.info("✅ Бот инициализирован успешно")
-    logger.info(f"🚀 Бот запущен на токене: {TELEGRAM_BOT_TOKEN[:20]}...")
-    logger.info("⏳ Ожидание входящих сообщений...")
-
-    # Запускаем бота с обработкой сигналов
-    try:
-        await app.run_polling(allowed_updates=Update.ALL_TYPES)
-    except KeyboardInterrupt:
-        logger.info("⏹️ Получен сигнал остановки (Ctrl+C)")
-    except Exception as e:
-        logger.error(f"❌ Критическая ошибка: {e}")
-
 
 if __name__ == "__main__":
-    import asyncio
-    import signal
     import sys
 
-    def signal_handler(sig, frame):
-        logger.info("⏹️ Получен сигнал прерывания")
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, signal_handler)
-
     try:
-        asyncio.run(main())
+        logger.info("🤖 Инициализация Telegram бота...")
+
+        # Инициализируем БД
+        init_databases()
+
+        # Создаём приложение
+        app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+
+        # Регистрация команды
+        register_conversation = ConversationHandler(
+            entry_points=[CommandHandler("register", register_start)],
+            states={
+                WAITING_FOR_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, register_name)],
+                WAITING_FOR_EMAIL: [MessageHandler(filters.TEXT & ~filters.COMMAND, register_email)],
+                WAITING_FOR_PASSPORT: [
+                    MessageHandler(filters.TEXT & ~filters.COMMAND, register_passport)
+                ],
+                WAITING_FOR_YEAR: [MessageHandler(filters.TEXT & ~filters.COMMAND, register_year)],
+            },
+            fallbacks=[CommandHandler("cancel", lambda u, c: ConversationHandler.END)],
+        )
+
+        # Обработчики команд
+        app.add_handler(CommandHandler("start", start_command))
+        app.add_handler(CommandHandler("help", help_command))
+        app.add_handler(register_conversation)
+        app.add_handler(CommandHandler("search", search_command))
+        app.add_handler(CallbackQueryHandler(visa_type_callback, pattern="^visa_"))
+        app.add_handler(CommandHandler("status", status_command))
+        app.add_handler(CommandHandler("stop", stop_command))
+
+        # Обработчик ошибок
+        app.add_error_handler(error_handler)
+
+        logger.info("✅ Бот инициализирован успешно")
+        logger.info(f"🚀 Бот запущен на токене: {TELEGRAM_BOT_TOKEN[:20]}...")
+        logger.info("⏳ Ожидание входящих сообщений...")
+
+        # Запускаем бота - app.run_polling() сам управляет event loop
+        app.run_polling(allowed_updates=Update.ALL_TYPES)
+        
     except KeyboardInterrupt:
-        logger.info("⏹️ Бот остановлен пользователем")
+        logger.info("⏹️ Бот остановлен пользователем (Ctrl+C)")
         sys.exit(0)
     except Exception as e:
         logger.error(f"❌ Ошибка: {e}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
