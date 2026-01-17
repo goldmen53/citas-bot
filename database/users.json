@@ -1,0 +1,8 @@
+{
+  "123456789": {
+    "full_name": "Test User",
+    "email": "test@example.com",
+    "passport": "12345678A",
+    "birth_year": 1990
+  }
+}

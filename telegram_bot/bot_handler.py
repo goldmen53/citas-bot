@@ -456,15 +456,33 @@ async def main():
 
     logger.info("✅ Бот инициализирован успешно")
     logger.info(f"🚀 Бот запущен на токене: {TELEGRAM_BOT_TOKEN[:20]}...")
+    logger.info("⏳ Ожидание входящих сообщений...")
 
-    # Запускаем бота
-    await app.run_polling(allowed_updates=Update.ALL_TYPES)
+    # Запускаем бота с обработкой сигналов
+    try:
+        await app.run_polling(allowed_updates=Update.ALL_TYPES)
+    except KeyboardInterrupt:
+        logger.info("⏹️ Получен сигнал остановки (Ctrl+C)")
+    except Exception as e:
+        logger.error(f"❌ Критическая ошибка: {e}")
 
 
 if __name__ == "__main__":
     import asyncio
+    import signal
+    import sys
+
+    def signal_handler(sig, frame):
+        logger.info("⏹️ Получен сигнал прерывания")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
 
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        logger.info("⏹️ Бот остановлен")
+        logger.info("⏹️ Бот остановлен пользователем")
+        sys.exit(0)
+    except Exception as e:
+        logger.error(f"❌ Ошибка: {e}")
+        sys.exit(1)

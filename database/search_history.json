@@ -1,0 +1,14 @@
+[
+  {
+    "user_id": "123456789",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-17T19:02:00",
+    "status": "started"
+  },
+  {
+    "user_id": "123456789",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-17T19:02:00",
+    "status": "started"
+  }
+]
