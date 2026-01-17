@@ -1,18 +1,18 @@
-# Modules
+# Модуль Modules
 
-Módulos para diferentes tipos de visa.
+Модули для различных типов виз.
 
-## Archivos
+## Файлы
 
-- `base_visa.py` - Clase base abstracta
-- `nie_specified.py` - NIE con región
-- `nie_national.py` - NIE sin región
-- `tie_specified.py` - TIE con región
-- `tie_national.py` - TIE sin región
-- `visa_factory.py` - Factory para crear módulos
-- `citation_extractor.py` - Extractor de citas
+- `base_visa.py` - Абстрактный базовый класс
+- `nie_specified.py` - НИЕ с регионом
+- `nie_national.py` - НИЕ без региона
+- `tie_specified.py` - ТИЕ с регионом
+- `tie_national.py` - ТИЕ без региона
+- `visa_factory.py` - Factory для создания модулей
+- `citation_extractor.py` - Парсер цитаций
 
-## Uso
+## Использование
 
 ```python
 from modules.visa_factory import create_visa_bot

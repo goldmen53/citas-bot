@@ -1,14 +1,14 @@
-# Database Module
+# Модуль Database
 
-Módulo para gestión de base de datos JSON.
+Модуль для управления базой данных JSON.
 
-## Archivos
+## Файлы
 
-- `db_manager.py` - Gestor principal de BD
-- `users.json` - Base de datos de usuarios
-- `search_history.json` - Historial de búsquedas
+- `db_manager.py` - Менеджер БД JSON
+- `users.json` - База пользователей
+- `search_history.json` - История поисков
 
-## Uso
+## Использование
 
 ```python
 from database.db_manager import UserDatabase
@@ -18,6 +18,6 @@ user = db.get_user(telegram_id)
 db.add_user(user_data)
 ```
 
-## Estructura de Datos
+## Структура данных
 
-Ver archivos JSON para estructura completa.
+См. файлы JSON для полной структуры.

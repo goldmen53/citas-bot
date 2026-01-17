@@ -1,25 +1,25 @@
-# Telegram Bot
+# Модуль Telegram Bot
 
-Bot de Telegram para gestionar búsquedas de citas.
+Бот Telegram для управления поиском цитаций.
 
-## Estructura
+## Структура
 
 ```
 telegram_bot/
-├── bot_handler.py      # Manejador principal
-├── commands/           # Comandos
+├── bot_handler.py      # Основной обработчик
+├── commands/           # Команды
 │   ├── start.py
 │   ├── register.py
 │   ├── search.py
 │   ├── status.py
 │   ├── stop.py
 │   └── help.py
-└── callbacks/          # Manejo de callbacks
+└── callbacks/          # Обработка callbacks
     ├── captcha_handler.py
     └── search_callbacks.py
 ```
 
-## Uso
+## Использование
 
 ```python
 from telegram_bot.bot_handler import CitasBot

@@ -1,14 +1,14 @@
-# Config Module
+# Модуль Config
 
-Módulo de configuración para CITAS Bot.
+Модуль конфигурации для CITAS Bot.
 
-## Archivos
+## Файлы
 
-- `visa_types.py` - Configuración de tipos de visa
-- `app_config.py` - Configuración general de la aplicación
-- `proxies.json` - Lista de proxys disponibles
+- `visa_types.py` - Конфигурация типов виз
+- `app_config.py` - Общая конфигурация приложения
+- `proxies.json` - Список доступных прокси
 
-## Uso
+## Использование
 
 ```python
 from config.visa_types import VISA_CONFIGS

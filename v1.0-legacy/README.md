@@ -1,44 +1,44 @@
-# V1.0 Legacy Code
+# V1.0 - Исходный код
 
-Este directorio contiene el código original (v1.0) de la implementación.
+Этот директорий содержит исходный код (v1.0) первоначальной реализации.
 
-## Archivos
+## Файлы
 
-- `CITA_NIE.py` - Script principal para búsqueda de NIE con región
-- `main.py` - Funciones auxiliares y utilidades
-- `requirements.txt` - Dependencias del proyecto
-- `Dockerfile` - Configuración Docker
-- `docker-compose.yml` - Orquestación Docker
-- `test.ipynb` - Notebook de pruebas
+- `CITA_NIE.py` - Основной скрипт для поиска НИЕ с регионом
+- `main.py` - Вспомогательные функции и утилиты
+- `requirements.txt` - Зависимости проекта
+- `Dockerfile` - Конфигурация Docker
+- `docker-compose.yml` - Оркестрация Docker
+- `test.ipynb` - Notebook с тестами
 
-## Uso
+## Использование
 
-Para usar el código legado:
+Для использования исходного кода:
 
 ```bash
 cd v1.0-legacy/
 python CITA_NIE.py
 ```
 
-## Notas
+## Примечания
 
-Este código ha sido archivado como referencia. Para la versión nueva y mejorada, consulta la rama `feature/modular-architecture`.
+Этот код был архивирован как ссылка. Для новой и улучшенной версии смотрите ветку `feature/modular-architecture`.
 
-### Limitaciones de v1.0
+### Ограничения v1.0
 
-- ❌ Solo soporta NIE con región
-- ❌ Sin interfaz Telegram
-- ❌ Sin soporte múltiples usuarios
-- ❌ Sin manejo de proxys automático
-- ❌ Código monolítico sin modularización
-- ❌ Notificaciones solo por sonido
+- ❌ Только поддержка НИЕ с регионом
+- ❌ Без интерфейса Telegram
+- ❌ Без поддержки нескольких пользователей
+- ❌ Без автоматического управления прокси
+- ❌ Монолитный код без модульности
+- ❌ Уведомления только через звук
 
-### Mejoras en v2.0
+### Улучшения в v2.0
 
-- ✅ Múltiples tipos de visa
-- ✅ Bot de Telegram completo
-- ✅ Soporte para múltiples usuarios simultáneamente
-- ✅ Rotación automática de proxys
-- ✅ Arquitectura modular y escalable
-- ✅ Notificaciones por Telegram
-- ✅ Captura y manejo de captchas
+- ✅ Поддержка нескольких типов виз
+- ✅ Полнофункциональный Telegram бот
+- ✅ Поддержка нескольких пользователей одновременно
+- ✅ Автоматическая ротация прокси
+- ✅ Модульная и масштабируемая архитектура
+- ✅ Уведомления через Telegram
+- ✅ Обработка и решение капч

@@ -1,99 +1,99 @@
-# Git Workflow para CITAS Bot
+# Git рабочий процесс для CITAS Bot
 
-## Estructura de Ramas
+## Структура ветвей
 
 ```
 main (v2.0 release branch)
   ├── develop (integration branch)
-  │   ├── feature/modular-architecture (EN DESARROLLO)
+  │   ├── feature/modular-architecture (В РАЗРАБОТКЕ)
   │   ├── feature/telegram-integration
   │   ├── feature/docker-orchestration
   │   ├── feature/proxy-rotation
   │   └── feature/captcha-handling
   │
-  └── v1.0-legacy (código original archivado)
+  └── v1.0-legacy (исходный код архивирован)
 ```
 
-## Cómo Trabajar
+## Как работать
 
-### 1. Crear una nueva feature
+### 1. Создать новую функцию
 
 ```bash
-# Desde develop
+# Из develop
 git checkout develop
 git pull origin develop
 
-# Crear rama de feature
-git checkout -b feature/nombre-feature
+# Создать ветку функции
+git checkout -b feature/название-функции
 
-# Hacer cambios...
+# Сделать изменения...
 git add .
-git commit -m "Feature: descripción clara"
+git commit -m "Feature: четкое описание"
 
-# Enviar a repositorio
-git push origin feature/nombre-feature
+# Отправить на сервер
+git push origin feature/название-функции
 ```
 
-### 2. Merge a develop
+### 2. Слияние в develop
 
 ```bash
 git checkout develop
-git merge --no-ff feature/nombre-feature
+git merge --no-ff feature/название-функции
 git push origin develop
 ```
 
-### 3. Release a main (v2.0)
+### 3. Релиз на main (v2.0)
 
 ```bash
 git checkout main
 git merge --no-ff develop
-git tag -a v2.0 -m "Release v2.0: Modular architecture with Telegram integration"
+git tag -a v2.0 -m "Release v2.0: Модульная архитектура с интеграцией Telegram"
 git push origin main
 git push origin v2.0
 ```
 
-## Convenciones de Commit
+## Соглашения для commit'ов
 
-Use formato: `Type: Descripción`
+Используйте формат: `Type: Описание`
 
-- `feat:` - Nueva feature
-- `fix:` - Corrección de bug
-- `refactor:` - Cambios sin alterar funcionalidad
-- `docs:` - Cambios en documentación
-- `test:` - Añadir tests
-- `chore:` - Tareas mantenimiento
+- `feat:` - Новая функция
+- `fix:` - Исправление ошибки
+- `refactor:` - Изменения без изменения функциональности
+- `docs:` - Изменения в документации
+- `test:` - Добавление тестов
+- `chore:` - Задачи техническое обслуживание
 
-### Ejemplos
+### Примеры
 
 ```bash
-git commit -m "feat: Add modular visa architecture"
-git commit -m "fix: Handle captcha blocking issue"
-git commit -m "docs: Update README with Docker setup"
-git commit -m "refactor: Extract common telegram handlers"
+git commit -m "feat: Добавить модульную архитектуру виз"
+git commit -m "fix: Исправить проблему с обработкой капчи"
+git commit -m "docs: Обновить README с инструкцией Docker"
+git commit -m "refactor: Извлечь общие обработчики Telegram"
 ```
 
-## Historial Actual
+## Текущая история
 
 ```
 v1.0 (tag)
-└── main: Add v1.0 legacy code
-    └── Initial commit: Configuration and docs
+└── main: Добавить исходный код v1.0
+    └── Initial commit: Конфигурация и документы
 ```
 
-## Próximos Pasos
+## Следующие шаги
 
-1. `feature/modular-architecture` - Estructura base
-2. `feature/telegram-integration` - Bot de Telegram
-3. `feature/docker-orchestration` - Docker & Proxys
-4. Merge to develop
-5. Release v2.0 a main
+1. `feature/modular-architecture` - Базовая структура
+2. `feature/telegram-integration` - Бот Telegram
+3. `feature/docker-orchestration` - Docker и прокси
+4. Слияние в develop
+5. Релиз v2.0 на main
 
-## Restaurar v1.0 si es necesario
+## Восстановить v1.0 если нужно
 
 ```bash
-# Ver código v1.0
+# Просмотр кода v1.0
 git checkout v1.0
 
-# O desde cualquier rama
+# Или из любой ветки
 git show v1.0:v1.0-legacy/CITA_NIE.py
 ```

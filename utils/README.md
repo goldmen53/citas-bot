@@ -1,18 +1,18 @@
-# Utils
+# Модуль Utils
 
-Módulo de utilidades para CITAS Bot.
+Модуль утилит для CITAS Bot.
 
-## Archivos
+## Файлы
 
-- `browser.py` - Inicialización del navegador
-- `wait.py` - Condiciones de espera
-- `block_handler.py` - Manejo de bloqueos
-- `captcha.py` - Manejo de captchas
-- `logger.py` - Sistema de logging
-- `proxy_manager.py` - Gestión de proxys
-- `notifier.py` - Sistema de notificaciones
+- `browser.py` - Инициализация браузера
+- `wait.py` - Условия ожидания
+- `block_handler.py` - Обработка блокировок
+- `captcha.py` - Обработка капч
+- `logger.py` - Система логирования
+- `proxy_manager.py` - Управление прокси
+- `notifier.py` - Система уведомлений
 
-## Uso
+## Использование
 
 ```python
 from utils.logger import setup_logger
