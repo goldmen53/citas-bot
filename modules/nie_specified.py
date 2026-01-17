@@ -96,7 +96,24 @@ class NIESpecified(BaseVisa):
             # Выбирается провинция через form
             logger.debug(f"Выбираю провинцию {self.provincia}...")
             form_xpath = self.xpaths['form']
-            dropdown_elem = self.driver.find_element(By.XPATH, form_xpath)
+            
+            # Пытаемся найти элемент
+            try:
+                dropdown_elem = self.driver.find_element(By.XPATH, form_xpath)
+            except NoSuchElementException:
+                # Элемент не найден - проверяем размер HTML
+                page_source = self.driver.page_source
+                if len(page_source) < 1000:
+                    logger.error("⛔ Вероятно БЛОКИРОВКА: HTML слишком короткий")
+                    logger.error(f"   Размер HTML: {len(page_source)} байт")
+                    logger.error("   Сайт, вероятно, блокирует автоматизированный доступ")
+                    logger.error("   Ожидаю 5 минут перед перезагрузкой...")
+                    time.sleep(300)  # 5 минут
+                    raise RestartLoop("Блокировка: HTML слишком короткий")
+                else:
+                    logger.error(f"❌ XPath не найден: {form_xpath}")
+                    logger.error(f"   Размер HTML: {len(page_source)} байт")
+                    raise RestartLoop("Элемент не найден - структура сайта изменилась")
             
             # Находим select внутри form и выбираем по индексу
             from selenium.webdriver.support.ui import Select
