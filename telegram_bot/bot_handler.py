@@ -39,6 +39,7 @@ load_dotenv()
 # Импортируем наши модули
 from utils.logger import setup_logger
 from modules.nie_specified import NIESpecified
+from modules.selenium_runner import async_search
 
 # Настраиваем логирование
 logger = setup_logger("telegram_bot", logging.INFO)
@@ -331,38 +332,135 @@ async def search_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def visa_type_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработчик выбора типа визы"""
+    """Обработчик выбора типа визы - запускает Selenium поиск"""
     query = update.callback_query
     await query.answer()
 
     visa_type = query.data
-
-    # Здесь должна быть логика выбора провинции, офиса и услуги
-    # Пока сохраняем тип визы
     user_id = str(query.from_user.id)
-    context.user_data["visa_type"] = visa_type
 
-    text = f"✅ Выбран тип: {visa_type}\n\n" f"🔍 Начинается поиск...\n\n"
+    try:
+        # Получить данные пользователя
+        user = get_user(user_id)
+        if not user:
+            await query.edit_message_text(
+                text="❌ Ошибка: Данные пользователя не найдены"
+            )
+            return
 
-    await query.edit_message_text(text=text, parse_mode=ParseMode.HTML)
+        # Сохраняем тип визы
+        context.user_data["visa_type"] = visa_type
 
-    # Имитация поиска (в реальной версии здесь будет запуск NIESpecified)
-    await query.message.reply_text(
-        "⏳ Поиск выполняется. Я пришлю уведомление, когда найду цитацию.",
-        parse_mode=ParseMode.HTML,
-    )
+        # Отправляем сообщение о начале поиска
+        text = (
+            f"✅ <b>Выбран тип:</b> {visa_type}\n\n"
+            f"🔍 <b>Начинается поиск цитаций...</b>\n"
+            f"👤 Имя: {user['full_name']}\n"
+            f"🔢 Паспорт: {user['passport']}\n\n"
+            f"⏳ Это может занять 1-2 минуты..."
+        )
+        await query.edit_message_text(text=text, parse_mode=ParseMode.HTML)
 
-    # Сохраняем в историю
-    save_search_history(
-        {
-            "user_id": user_id,
-            "visa_type": visa_type,
-            "start_time": datetime.now().isoformat(),
-            "status": "started",
-        }
-    )
+        # Логируем начало поиска
+        logger.info(
+            f"🔍 Пользователь {user_id} ({user['full_name']}) начал поиск: {visa_type}"
+        )
 
-    logger.info(f"🔍 Пользователь {user_id} начал поиск: {visa_type}")
+        # Сохраняем в историю
+        save_search_history(
+            {
+                "user_id": user_id,
+                "visa_type": visa_type,
+                "start_time": datetime.now().isoformat(),
+                "status": "started",
+            }
+        )
+
+        # Запускаем асинхронный Selenium поиск
+        # Это выполняется в отдельном потоке и не блокирует бота
+        search_result = await async_search(
+            passport=user["passport"],
+            full_name=user["full_name"],
+            birth_year=str(user["birth_year"]),
+            visa_type=visa_type,
+            provincia=0,  # Default провинция
+            oficina=0,    # Default офис
+            tramite=0,    # Default услуга
+        )
+
+        logger.info(
+            f"✅ Поиск завершен для {user_id}: success={search_result['success']}"
+        )
+
+        # Подготавливаем результат для пользователя
+        if search_result["success"] and search_result["citations"]:
+            # Есть найденные цитации
+            citations_text = "\n".join(
+                f"• {i}. {cite}" for i, cite in enumerate(search_result["citations"][:5], 1)
+            )
+
+            result_text = (
+                f"✅ <b>Цитации найдены!</b>\n\n"
+                f"{citations_text}\n\n"
+                f"📞 Свяжитесь с офисом для подтверждения."
+            )
+
+            # Сохраняем успешный результат
+            save_search_history(
+                {
+                    "user_id": user_id,
+                    "visa_type": visa_type,
+                    "start_time": datetime.now().isoformat(),
+                    "status": "found",
+                    "citations_count": len(search_result["citations"]),
+                }
+            )
+        else:
+            # Не найдены или ошибка
+            result_text = (
+                f"❌ <b>Цитации не найдены</b>\n\n"
+                f"{search_result['message']}\n\n"
+                f"⏰ Попробуйте позже или выберите другой тип визы."
+            )
+
+            # Сохраняем результат
+            save_search_history(
+                {
+                    "user_id": user_id,
+                    "visa_type": visa_type,
+                    "start_time": datetime.now().isoformat(),
+                    "status": "not_found",
+                    "error": search_result.get("error", "Unknown error"),
+                }
+            )
+
+        # Отправляем результат пользователю
+        await query.message.reply_text(
+            result_text,
+            parse_mode=ParseMode.HTML,
+        )
+
+    except Exception as e:
+        error_msg = str(e)
+        logger.error(f"❌ Ошибка при обработке visa_type_callback: {error_msg}")
+        logger.exception(e)
+
+        # Сохраняем ошибку
+        save_search_history(
+            {
+                "user_id": user_id,
+                "visa_type": visa_type,
+                "start_time": datetime.now().isoformat(),
+                "status": "error",
+                "error": error_msg[:100],
+            }
+        )
+
+        # Уведомляем пользователя об ошибке
+        await query.message.reply_text(
+            f"❌ <b>Ошибка при поиске:</b>\n\n{error_msg[:200]}",
+            parse_mode=ParseMode.HTML,
+        )
 
 
 async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
