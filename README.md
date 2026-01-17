@@ -1,67 +1,67 @@
-# 🎫 CITAS Bot - Búsqueda Automatizada de Citas en España
+# 🎫 CITAS Bot - Автоматизированный поиск цитаций в Испании
 
-Automatización para búsqueda de citas en el sistema de Oficinas de Extranjería de España (NIE, TIE, etc).
+Автоматизация для поиска цитаций в системе Офисов иностранцев Испании (НИЕ, ТИЕ и т.д.).
 
-## 📋 Versiones
+## 📋 Версии
 
-- **v1.0** (rama `v1.0-legacy`) - Implementación inicial para NIE con región
-- **v2.0** (rama `main`) - Arquitectura modular con soporte para múltiples tipos de visa, Telegram Bot, Docker
+- **v1.0** (ветка `v1.0-legacy`) - Первоначальная реализация для НИЕ с регионом
+- **v2.0** (ветка `main`) - Модульная архитектура с поддержкой нескольких типов виз, Telegram Bot, Docker
 
-## 🚀 Características v2.0
+## 🚀 Особенности v2.0
 
-- ✅ **Soporte múltiples visas**: NIE/TIE, con/sin región
-- ✅ **Telegram Bot**: Control completo vía Telegram
-- ✅ **Docker Compose**: Despliegue con múltiples contenedores
-- ✅ **Rotación de Proxys**: Evitar bloqueos por IP
-- ✅ **Manejo de Captchas**: Envío a usuario vía Telegram
-- ✅ **Base de Datos JSON**: Gestión de usuarios
-- ✅ **Extracción automática**: Parsingde citas disponibles
-- ✅ **Registro de búsquedas**: Historial en BD
+- ✅ **Поддержка нескольких виз**: НИЕ/ТИЕ, с/без региона
+- ✅ **Telegram Bot**: Полный контроль через Telegram
+- ✅ **Docker Compose**: Развёртывание с несколькими контейнерами
+- ✅ **Ротация прокси**: Избежать блокировок по IP
+- ✅ **Обработка капч**: Отправка пользователю через Telegram
+- ✅ **База данных JSON**: Управление пользователями
+- ✅ **Автоматическое извлечение**: Парсинг доступных цитаций
+- ✅ **Логирование поисков**: История в БД
 
-## 📁 Estructura del Proyecto
+## 📁 Структура проекта
 
 ```
 citas-bot/
-├── config/                    # Configuraciones
-│   ├── visa_types.py         # Tipos de visa y rutas
-│   ├── app_config.py         # Configuración general
-│   └── proxies.json          # Lista de proxys
+├── config/                    # Конфигурации
+│   ├── visa_types.py         # Типы виз и маршруты
+│   ├── app_config.py         # Общая конфигурация
+│   └── proxies.json          # Список прокси
 │
-├── database/                 # Gestión de datos
-│   ├── db_manager.py        # Gestor de BD JSON
-│   ├── users.json           # Base de usuarios
-│   └── search_history.json  # Historial de búsquedas
+├── database/                 # Управление данными
+│   ├── db_manager.py        # Менеджер БД JSON
+│   ├── users.json           # База пользователей
+│   └── search_history.json  # История поисков
 │
-├── modules/                 # Módulos de búsqueda
-│   ├── base_visa.py        # Clase base abstracta
-│   ├── nie_specified.py    # NIE con región
-│   ├── nie_national.py     # NIE sin región
-│   ├── tie_specified.py    # TIE con región
-│   ├── tie_national.py     # TIE sin región
+├── modules/                 # Модули поиска
+│   ├── base_visa.py        # Абстрактный базовый класс
+│   ├── nie_specified.py    # НИЕ с регионом
+│   ├── nie_national.py     # НИЕ без региона
+│   ├── tie_specified.py    # ТИЕ с регионом
+│   ├── tie_national.py     # ТИЕ без региона
 │   ├── visa_factory.py     # Factory pattern
-│   └── citation_extractor.py # Parsing de citas
+│   └── citation_extractor.py # Парсинг цитаций
 │
-├── telegram_bot/           # Bot de Telegram
-│   ├── bot_handler.py      # Manejador principal
-│   ├── commands/           # Comandos disponibles
+├── telegram_bot/           # Бот Telegram
+│   ├── bot_handler.py      # Основной обработчик
+│   ├── commands/           # Доступные команды
 │   │   ├── start.py
 │   │   ├── register.py
 │   │   ├── search.py
 │   │   ├── status.py
 │   │   ├── stop.py
 │   │   └── help.py
-│   └── callbacks/          # Manejadores de callbacks
+│   └── callbacks/          # Обработчики callbacks
 │       ├── captcha_handler.py
 │       └── search_callbacks.py
 │
-├── utils/                  # Utilidades
-│   ├── browser.py         # Inicialización Selenium
-│   ├── wait.py            # Wait conditions
-│   ├── block_handler.py   # Manejo de bloqueos
-│   ├── captcha.py         # Handling de captchas
-│   ├── logger.py          # Logging
-│   ├── proxy_manager.py   # Gestión de proxys
-│   └── notifier.py        # Notificaciones
+├── utils/                  # Утилиты
+│   ├── browser.py         # Инициализация Selenium
+│   ├── wait.py            # Условия ожидания
+│   ├── block_handler.py   # Обработка блокировок
+│   ├── captcha.py         # Обработка капч
+│   ├── logger.py          # Логирование
+│   ├── proxy_manager.py   # Управление прокси
+│   └── notifier.py        # Уведомления
 │
 ├── containers/            # Docker
 │   ├── docker-compose.yml
@@ -69,39 +69,39 @@ citas-bot/
 │   ├── entrypoint.sh
 │   └── requirements.txt
 │
-├── v1.0-legacy/          # Código original (archivado)
+├── v1.0-legacy/          # Исходный код (архивирован)
 ├── .gitignore
 ├── .env.example
-├── main.py               # Punto de entrada
+├── main.py               # Точка входа
 └── README.md
 ```
 
-## 🔧 Requisitos
+## 🔧 Требования
 
 - Python 3.10+
 - Docker & Docker Compose
 - Telegram Bot Token
-- Proxys (opcional)
+- Прокси (опционально)
 
-## 📦 Instalación
+## 📦 Установка
 
-### Desarrollo Local
+### Локальная разработка
 
 ```bash
-# Clonar repositorio
+# Клонировать репозиторий
 git clone <your-repo-url>
 cd citas-bot
 
-# Crear venv
+# Создать venv
 python -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
+source venv/bin/activate  # На Windows: venv\Scripts\activate
 
-# Instalar dependencias
+# Установить зависимости
 pip install -r requirements.txt
 
-# Configurar .env
+# Настроить .env
 cp .env.example .env
-# Editar .env con tus datos
+# Отредактировать .env со своими данными
 ```
 
 ### Docker
@@ -110,28 +110,28 @@ cp .env.example .env
 docker-compose up -d
 ```
 
-## 🤖 Uso con Telegram Bot
+## 🤖 Использование с Telegram Bot
 
-### Comandos disponibles
+### Доступные команды
 
 ```
-/start           - Iniciar bot
-/register        - Registrar nuevo usuario
-/search          - Iniciar búsqueda de citas
-/status          - Ver estado de búsqueda
-/stop            - Detener búsqueda
-/help            - Ayuda
+/start           - Запустить бот
+/register        - Зарегистрировать нового пользователя
+/search          - Начать поиск цитаций
+/status          - Посмотреть статус поиска
+/stop            - Остановить поиск
+/help            - Справка
 ```
 
-### Flujo de uso
+### Порядок использования
 
-1. Inicia el bot con `/start`
-2. Registrate con `/register` y sigue los pasos
-3. Inicia búsqueda con `/search`
-4. Recibirás notificación cuando se encuentren citas
-5. El bot te enviará captchas si es necesario (resuelve en Telegram)
+1. Запустите бот с `/start`
+2. Зарегистрируйтесь с `/register` и следуйте инструкциям
+3. Начните поиск с `/search`
+4. Вы получите уведомление, когда найдутся цитации
+5. Бот отправит вам капчи, если необходимо (решите в Telegram)
 
-## 🗄️ Estructura de Base de Datos (JSON)
+## 🗄️ Структура базы данных (JSON)
 
 ### users.json
 ```json
@@ -156,63 +156,63 @@ docker-compose up -d
 
 ## 🐳 Docker Compose
 
-Se levantarán automáticamente:
-- `telegram-bot`: Bot principal de Telegram
-- `worker-nie-spec-1`: Worker NIE con región (Proxy 1)
-- `worker-nie-nat-1`: Worker NIE sin región (Proxy 2)
-- Más workers según configuración
+Автоматически запустятся:
+- `telegram-bot`: Основной бот Telegram
+- `worker-nie-spec-1`: Worker НИЕ с регионом (Прокси 1)
+- `worker-nie-nat-1`: Worker НИЕ без региона (Прокси 2)
+- Больше workers в зависимости от конфигурации
 
-Cada container tiene su propia proxy para evitar bloqueos.
+Каждый контейнер имеет свой прокси для избежания блокировок.
 
-## 🔐 Variables de Entorno
+## 🔐 Переменные окружения
 
 ```env
 # Telegram
 TELEGRAM_BOT_TOKEN=your_token_here
 
-# Proxys (opcional)
+# Прокси (опционально)
 PROXY_1=192.168.1.1:8080
 PROXY_2=192.168.1.2:8080
 
-# Logging
+# Логирование
 LOG_LEVEL=INFO
 ```
 
-## 📚 Ramas Git
+## 📚 Ветки Git
 
-- `main` - Rama principal con arquitectura modular (v2.0)
-- `develop` - Rama de desarrollo
-- `v1.0-legacy` - Código original (archivado)
-- `feature/*` - Ramas de features
+- `main` - Главная ветка с модульной архитектурой (v2.0)
+- `develop` - Ветка разработки
+- `v1.0-legacy` - Исходный код (архивирован)
+- `feature/*` - Ветки для features
 
-## 🎓 Aprendizaje
+## 🎓 Обучение
 
-Este proyecto es una excelente oportunidad para aprender:
+Этот проект - отличная возможность для обучения:
 
-- ✅ Patrones de diseño (Factory, Abstract Factory)
-- ✅ Async/Await en Python
+- ✅ Паттерны проектирования (Factory, Abstract Factory)
+- ✅ Async/Await в Python
 - ✅ Selenium & Web Scraping
 - ✅ Telegram Bot API
 - ✅ Docker & Docker Compose
-- ✅ Gestión de prox y anti-detection
-- ✅ Logging y debugging
-- ✅ Git workflow profesional
+- ✅ Управление прокси и anti-detection
+- ✅ Логирование и отладка
+- ✅ Профессиональный Git workflow
 
-## ⚠️ Disclaimer
+## ⚠️ Дисклеймер
 
-Este proyecto es solo con fines educativos. El usuario es responsable del cumplimiento de:
-- Términos de servicio del sitio web
-- Leyes locales y regionales
-- Límite de solicitudes y manejo ético del web scraping
+Этот проект только в образовательных целях. Пользователь несёт ответственность за:
+- Соблюдение условий обслуживания веб-сайта
+- Местные и региональные законы
+- Лимиты запросов и этичный веб-скрейпинг
 
-## 📄 Licencia
+## 📄 Лицензия
 
 MIT
 
-## 👤 Autor
+## 👤 Автор
 
-Desarrollado para automatización de búsqueda de citas en España.
+Разработано для автоматизации поиска цитаций в Испании.
 
 ---
 
-**Nota**: Para versión anterior (v1.0), consulta la rama `v1.0-legacy` o archivo `citas-v1.0-backup.tar.gz`
+**Примечание**: Для версии v1.0 смотрите ветку `v1.0-legacy` или файл `citas-v1.0-backup.tar.gz`
