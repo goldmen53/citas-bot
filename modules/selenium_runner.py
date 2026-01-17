@@ -187,10 +187,19 @@ def run_selenium_search(passport: str, full_name: str, birth_year: str,
         error_msg = str(e)
         logger.error(f"❌ Ошибка при поиске: {error_msg}")
         logger.exception(e)  # Логировать полный stack trace
+        
+        # Проверяем специфичные ошибки
+        if "429" in error_msg or "Too Many Requests" in error_msg:
+            message = "⛔ БЛОКИРОВКА: Сайт заблокировал доступ (429)\n⏳ Подожди 10 минут и попробуй снова"
+        elif "Connection refused" in error_msg or "no such element" in error_msg:
+            message = "❌ Ошибка при взаимодействии с сайтом\nПопробуй позже или проверь соединение"
+        else:
+            message = f'❌ Ошибка при поиске:\n{error_msg[:200]}'
+        
         return {
             'success': False,
             'citations': [],
-            'message': f'❌ Ошибка при поиске:\n{error_msg[:200]}',
+            'message': message,
             'error': error_msg
         }
     

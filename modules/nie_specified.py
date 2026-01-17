@@ -289,20 +289,35 @@ class NIESpecified(BaseVisa):
         
         while True:
             try:
-                # Случайная задержка перед попыткой
-                time.sleep(randrange(4, 7))
                 self.attempt_counter += 1
                 
                 logger.info(f"\n#{self.attempt_counter} ПОПЫТКА ПОИСКА")
                 logger.debug("-" * 60)
                 
+                # Проверяем был ли блокирован доступ (429 Too Many Requests)
+                try:
+                    page_source = self.driver.page_source
+                    if "429" in page_source or "Too Many Requests" in page_source:
+                        logger.error("⛔ БЛОКИРОВКА: Сайт вернул 429 (Too Many Requests)")
+                        logger.error("⏳ Ожидание 10 минут перед попыткой...")
+                        time.sleep(600)  # 10 минут
+                        self.driver.refresh()
+                        continue
+                except Exception as e:
+                    logger.debug(f"Ошибка при проверке блокировки: {e}")
+                
                 # 1. Проверяем блокирующие состояния
                 if self.check_blocking_states():
                     logger.info("↻ Обнаружено блокирующее состояние, перезагружаю...")
+                    # Если блокировка - ждем дольше
+                    time.sleep(randrange(120, 180))  # 2-3 минуты
                     continue
                 
                 # 2. Закрываем cookie popup
                 self.close_cookie_popup(actions)
+                
+                # Случайная задержка
+                time.sleep(randrange(3, 6))
                 
                 # 3. Выбираем провинцию и нажимаем Accept
                 self.select_provincia_and_accept(actions)
