@@ -4,5 +4,11 @@
     "email": "test@example.com",
     "passport": "12345678A",
     "birth_year": 1990
+  },
+  "908670065": {
+    "full_name": "Yevhen Maksymov",
+    "email": "goldmen53@gmail.com",
+    "passport": "Fv43212",
+    "birth_year": 1991
   }
 }

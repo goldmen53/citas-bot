@@ -122,8 +122,8 @@ def run_selenium_search(passport: str, full_name: str, birth_year: str,
             )
             
             # Запустить поиск
-            logger.info("🔍 Запускаю метод search()...")
-            citations = searcher.search()
+            logger.info("🔍 Запускаю метод search_for_citations()...")
+            citations = searcher.search_for_citations()
             
             logger.info(f"✅ Поиск завершен успешно")
             logger.info(f"   Найдено цитаций: {len(citations) if citations else 0}")
@@ -138,27 +138,29 @@ def run_selenium_search(passport: str, full_name: str, birth_year: str,
         elif visa_type == 'visa_nie_nat':
             logger.info("📋 Тип: НИЕ (национальный)")
             logger.warning("⚠️ НИЕ национальный еще не реализован, используем mock")
+            logger.warning("⚠️ ВАЖНО: Это MOCK результаты, не реальный поиск!")
             
             # Mock implementation для демонстрации
             time.sleep(2)
             return {
                 'success': True,
-                'citations': ['2026-01-20 14:30', '2026-01-21 10:00'],
-                'message': '✅ (Mock) Найдено 2 цитации',
-                'error': None
+                'citations': [],  # Пусто - нет реального поиска
+                'message': '⚠️ НИЕ национальный еще не реализован. Используй visa_nie_spec (НИЕ с регионом).',
+                'error': 'not_implemented'
             }
         
         elif visa_type == 'visa_tie':
             logger.info("📋 Тип: ТИЕ")
             logger.warning("⚠️ ТИЕ еще не реализован, используем mock")
+            logger.warning("⚠️ ВАЖНО: Это MOCK результаты, не реальный поиск!")
             
             # Mock implementation для демонстрации
             time.sleep(2)
             return {
                 'success': True,
-                'citations': ['2026-01-22 09:00', '2026-01-23 15:30'],
-                'message': '✅ (Mock) Найдено 2 цитации',
-                'error': None
+                'citations': [],  # Пусто - нет реального поиска
+                'message': '⚠️ ТИЕ еще не реализован. Используй visa_nie_spec (НИЕ с регионом).',
+                'error': 'not_implemented'
             }
         
         else:

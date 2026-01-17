@@ -10,5 +10,44 @@
     "visa_type": "visa_nie_spec",
     "start_time": "2026-01-17T19:02:00",
     "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-17T19:50:30.586327",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-17T19:50:35.926960",
+    "status": "not_found",
+    "error": "'NIESpecified' object has no attribute 'search'"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_nat",
+    "start_time": "2026-01-17T19:50:55.059643",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_nat",
+    "start_time": "2026-01-17T19:50:57.723771",
+    "status": "found",
+    "citations_count": 2
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_nat",
+    "start_time": "2026-01-17T19:53:39.939568",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_nat",
+    "start_time": "2026-01-17T19:53:42.708471",
+    "status": "found",
+    "citations_count": 2
   }
 ]

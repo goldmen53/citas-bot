@@ -378,6 +378,7 @@ async def visa_type_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
         # Запускаем асинхронный Selenium поиск
         # Это выполняется в отдельном потоке и не блокирует бота
+        logger.info(f"📊 Вызываю async_search для типа: {visa_type}")
         search_result = await async_search(
             passport=user["passport"],
             full_name=user["full_name"],
@@ -389,8 +390,11 @@ async def visa_type_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
 
         logger.info(
-            f"✅ Поиск завершен для {user_id}: success={search_result['success']}"
+            f"✅ Поиск завершен для {user_id}: success={search_result['success']}, "
+            f"citations={len(search_result.get('citations', []))}, "
+            f"message='{search_result.get('message', '')}'"
         )
+        logger.debug(f"Полный результат поиска: {search_result}")
 
         # Подготавливаем результат для пользователя
         if search_result["success"] and search_result["citations"]:
