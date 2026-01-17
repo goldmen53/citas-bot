@@ -1,0 +1,48 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# CITAS BOT v2.0 - Python Dependencies
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Browser Automation & Anti-Detection
+selenium>=4.15.0              # Web browser automation
+selenium-stealth>=1.0.1       # Anti-detection for Selenium
+seleniumbase>=1.39.0          # Selenium wrapper with undetected Chrome
+undetected-chromedriver>=3.5.4  # Chromedriver without detection
+
+# Telegram Bot
+python-telegram-bot[all]>=20.0  # Official Telegram Bot API library
+
+# Utilities
+python-dotenv>=1.0.0         # Load environment variables from .env
+requests>=2.31.0             # HTTP library
+beautifulsoup4>=4.12.0       # HTML parsing
+
+# Logging & Monitoring
+python-json-logger>=2.0.7    # JSON logging
+
+# Database (for future)
+sqlalchemy>=2.0.0            # SQL toolkit (optional, for future)
+
+# Testing
+pytest>=7.4.0                # Testing framework
+pytest-cov>=4.1.0            # Code coverage
+pytest-asyncio>=0.21.0       # Async test support
+
+# Development
+black>=23.11.0               # Code formatter
+flake8>=6.1.0                # Code linter
+isort>=5.13.0                # Import sorting
+mypy>=1.7.0                  # Type checking
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# INSTALLATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Install all dependencies:
+# pip install -r requirements.txt
+
+# Install specific groups:
+# pip install selenium seleniumbase          # Browser automation
+# pip install python-telegram-bot[all]       # Telegram bot
+# pip install pytest pytest-cov              # Testing
+
+# ═══════════════════════════════════════════════════════════════════════════════
