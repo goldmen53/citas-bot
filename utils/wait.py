@@ -26,6 +26,7 @@ def wait_clickable(driver, by, value, timeout=30):
         
     Raises:
         TimeoutException: Если элемент не найден за отведённое время
+        KeyboardInterrupt: Если пользователь нажал Ctrl+C
     """
     try:
         logger.debug(f"Ожидаю элемент {value} (тип: {by})")
@@ -36,6 +37,9 @@ def wait_clickable(driver, by, value, timeout=30):
         return element
     except TimeoutException:
         logger.error(f"✗ Элемент НЕ найден после {timeout}s: {value}")
+        raise
+    except KeyboardInterrupt:
+        logger.warning("⚠️ Поиск прерван пользователем (Ctrl+C)")
         raise
 
 
@@ -58,6 +62,9 @@ def safe_wait_clickable(driver, by, value, timeout=30, default=None):
     except TimeoutException:
         logger.warning(f"Используется значение по умолчанию для {value}")
         return default
+    except KeyboardInterrupt:
+        logger.warning("⚠️ Поиск элемента прерван (Ctrl+C)")
+        raise
 
 
 def wait_for_element(driver, by, value, timeout=30):

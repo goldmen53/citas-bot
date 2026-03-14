@@ -61,5 +61,99 @@
     "visa_type": "visa_nie_spec",
     "start_time": "2026-01-17T20:28:20.479381",
     "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-17T20:31:12.557775",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_nat",
+    "start_time": "2026-01-18T12:55:06.590597",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_nat",
+    "start_time": "2026-01-18T12:57:37.069477",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_nat",
+    "start_time": "2026-01-18T12:57:46.304024",
+    "status": "not_found",
+    "error": "not_implemented"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T12:58:07.317192",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T13:03:10.526086",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T13:06:43.783192",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T13:14:09.190120",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T13:23:48.549882",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T13:27:21.847476",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T13:27:21.869157",
+    "status": "not_found",
+    "error": "not all arguments converted during string formatting"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T13:27:48.000811",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T13:27:48.020433",
+    "status": "not_found",
+    "error": "not all arguments converted during string formatting"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T13:29:38.003738",
+    "status": "started"
+  },
+  {
+    "user_id": "908670065",
+    "visa_type": "visa_nie_spec",
+    "start_time": "2026-01-18T13:29:38.022560",
+    "status": "not_found",
+    "error": "not all arguments converted during string formatting"
   }
 ]

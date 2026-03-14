@@ -1,39 +1,39 @@
 """
 Скрипт для анализа реальной структуры сайта испанского сервиса
 и выяснения какие XPath'ы работают
+
+Использует SeleniumBase с uc=True (undetected-chromedriver) для обхода WAF
 """
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from seleniumbase import Driver
 import time
 
-# Настройка Chrome
-chrome_options = Options()
-chrome_options.add_argument('--disable-dev-shm-usage')
-chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
-chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--window-size=1920,1080')
-
-print("🔧 Создаю WebDriver...")
+print("🔧 Создаю SeleniumBase Driver с uc=True (Undetected ChromeDriver)...")
 try:
-    driver = webdriver.Chrome(options=chrome_options)
-    print("✅ WebDriver создан")
+    driver = Driver(uc=True, headless=True)
+    print("✅ Driver создан")
 except Exception as e:
-    print(f"❌ Ошибка создания WebDriver: {e}")
-    print("💡 Попробуй установить ChromeDriver:")
-    print("   pip install webdriver-manager")
+    print(f"❌ Ошибка создания Driver: {e}")
+    print("💡 Попробуй установить пакеты:")
+    print("   pip install seleniumbase>=4.20.0 undetected-chromedriver>=3.5.4")
     exit(1)
 
 try:
-    print("\n🌐 Загружаю страницу...")
-    print("⏳ Ожидание 5 секунд перед доступом (чтобы избежать блокировки)...")
-    time.sleep(5)
+    print("\n🌐 Загружаю страницу с помощью uc_open_with_reconnect...")
     
-    driver.get("https://icp.administracionelectronica.gob.es/icpco/index")
+    START_URL = "https://icp.administracionelectronica.gob.es/icpco/index"
     
-    print("⏳ Ожидание загрузки страницы (10 секунд для JavaScript)...")
-    time.sleep(10)
+    try:
+        # Используем uc_open_with_reconnect как в v1.0 - это специальный метод 
+        # для автоматического переподключения при блокировке
+        driver.uc_open_with_reconnect(START_URL, 5)
+        print("✅ Страница загружена с помощью uc_open_with_reconnect")
+    except Exception as e:
+        print(f"⚠️ uc_open_with_reconnect вернул ошибку: {e}")
+        print("Пытаюсь альтернативным способом через .get()...")
+        driver.get(START_URL)
+        time.sleep(10)
+        print("✅ Страница загружена через .get()")
     
     print("✅ Страница загружена")
     

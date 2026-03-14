@@ -5,7 +5,7 @@
 # Browser Automation & Anti-Detection
 selenium>=4.15.0              # Web browser automation
 selenium-stealth>=1.0.1       # Anti-detection for Selenium
-seleniumbase>=1.39.0          # Selenium wrapper with undetected Chrome
+seleniumbase>=4.20.0          # Selenium wrapper with undetected Chrome (uc=True mode)
 undetected-chromedriver>=3.5.4  # Chromedriver without detection
 
 # Telegram Bot

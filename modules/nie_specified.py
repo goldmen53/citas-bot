@@ -8,9 +8,16 @@
 import time
 from random import randrange
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 
 from modules.base_visa import BaseVisa
+from modules.anti_blocking import (
+    guard_blocking_states, 
+    RestartLoopException,
+    wait_clickable
+)
+from utils.wait import safe_wait_clickable
 from utils.logger import setup_logger
 from utils.block_handler import RestartLoop
 from config.xpaths import get_xpaths
@@ -93,6 +100,11 @@ class NIESpecified(BaseVisa):
             RestartLoop: Если операция не удалась
         """
         try:
+            # Проверяем блокировку перед попыткой выбора
+            if guard_blocking_states(self.driver, self.start_url):
+                logger.warning("[BLOCK] Блокировка обнаружена перед выбором провинции")
+                raise RestartLoop("Блокировка: guard_blocking_states вернул True")
+            
             # Выбирается провинция через form
             logger.debug(f"Выбираю провинцию {self.provincia}...")
             form_xpath = self.xpaths['form']
@@ -109,6 +121,7 @@ class NIESpecified(BaseVisa):
                     logger.error("   Сайт, вероятно, блокирует автоматизированный доступ")
                     logger.error("   Ожидаю 5 минут перед перезагрузкой...")
                     time.sleep(300)  # 5 минут
+                    self.driver.get(self.start_url)  # Перезагружаем страницу
                     raise RestartLoop("Блокировка: HTML слишком короткий")
                 else:
                     logger.error(f"❌ XPath не найден: {form_xpath}")
@@ -127,6 +140,9 @@ class NIESpecified(BaseVisa):
             logger.info("✓ Кнопка 'Aceptar' нажата")
             time.sleep(randrange(2, 5))
             
+        except RestartLoopException as e:
+            logger.warning(f"[ANTI-BLOCKING] Restart loop: {e}")
+            raise RestartLoop(f"Anti-blocking: {e}")
         except Exception as e:
             logger.error(f"✗ Ошибка при выборе провинции: {e}")
             raise RestartLoop(f"Ошибка при выборе провинции")
@@ -139,17 +155,59 @@ class NIESpecified(BaseVisa):
             RestartLoop: Если операция не удалась
         """
         try:
+            # Дополнительное ожидание для загрузки страницы после выбора провинции
+            logger.debug("⏳ Ожидание загрузки новых элементов (sede и tramiteGrupo)...")
+            time.sleep(randrange(3, 5))
+            
             # Выбираем офис
             logger.debug(f"Выбираю офис {self.oficina}...")
-            self.click_dropdown(actions, self.xpaths['office_dropdown'], self.oficina, "Офис")
-            logger.info(f"✓ Офис {self.oficina} выбран")
-            time.sleep(0.3)
+            logger.debug(f"   XPath для sede: {self.xpaths['office_dropdown']}")
+            
+            # Увеличиваем timeout для sede до 30 секунд - элемент может загружаться дольше
+            try:
+                office_element = safe_wait_clickable(self.driver, By.XPATH, self.xpaths['office_dropdown'], timeout=30)
+                if office_element is None:
+                    logger.error(f"✗ Офис dropdown (sede) не найден")
+                    logger.error(f"   Проверяю наличие элемента на странице...")
+                    try:
+                        page_source = self.driver.page_source
+                        if 'sede' in page_source:
+                            logger.debug("   ℹ️ Элемент есть в HTML, но не кликабель")
+                        else:
+                            logger.error("   ⛔ Элемент отсутствует в HTML вообще!")
+                    except:
+                        pass
+                    raise RestartLoop("Офис dropdown не найден")
+                
+                from selenium.webdriver.support.ui import Select
+                select = Select(office_element)
+                select.select_by_index(self.oficina)
+                logger.info(f"✓ Офис {self.oficina} выбран")
+            except Exception as e:
+                logger.error(f"✗ Ошибка при выборе офиса: {e}")
+                raise RestartLoop(f"Ошибка при выборе офиса: {e}")
+            
+            time.sleep(0.5)
             
             # Выбираем тип услуги (трамите)
             logger.debug(f"Выбираю услугу {self.tramite}...")
-            self.click_dropdown(actions, self.xpaths['service_dropdown'], self.tramite, "Услуга (Trámite)")
-            logger.info(f"✓ Услуга {self.tramite} выбрана")
-            time.sleep(0.1)
+            logger.debug(f"   XPath для tramiteGrupo: {self.xpaths['service_dropdown']}")
+            
+            try:
+                service_element = safe_wait_clickable(self.driver, By.XPATH, self.xpaths['service_dropdown'], timeout=30)
+                if service_element is None:
+                    logger.error(f"✗ Услуга dropdown (tramiteGrupo) не найдена")
+                    raise RestartLoop("Услуга dropdown не найдена")
+                
+                from selenium.webdriver.support.ui import Select
+                select = Select(service_element)
+                select.select_by_index(self.tramite)
+                logger.info(f"✓ Услуга {self.tramite} выбрана")
+            except Exception as e:
+                logger.error(f"✗ Ошибка при выборе услуги: {e}")
+                raise RestartLoop(f"Ошибка при выборе услуги: {e}")
+            
+            time.sleep(0.3)
             
             # Нажимаем Accept
             self.click_button(actions, self.xpaths['accept_button'], "Aceptar (офис)", 0.5)
@@ -296,77 +354,98 @@ class NIESpecified(BaseVisa):
         Основной цикл поиска цитаций.
         
         Работает в бесконечном цикле пока не будут найдены цитации.
+        Использует uc_open_with_reconnect() для переподключения при блокировке.
+        
+        Может быть остановлен через Ctrl+C.
         """
         logger.info("="*60)
         logger.info("🚀 Запуск поиска цитаций для НИЕ с регионом")
+        logger.info("🔍 Нажми Ctrl+C для остановки поиска")
         logger.info("="*60)
         
-        from selenium.webdriver.common.action_chains import ActionChains
         actions = ActionChains(self.driver)
         
-        while True:
-            try:
-                self.attempt_counter += 1
-                
-                logger.info(f"\n#{self.attempt_counter} ПОПЫТКА ПОИСКА")
-                logger.debug("-" * 60)
-                
-                # Проверяем был ли блокирован доступ (429 Too Many Requests)
+        try:
+            while True:
                 try:
-                    page_source = self.driver.page_source
-                    if "429" in page_source or "Too Many Requests" in page_source:
-                        logger.error("⛔ БЛОКИРОВКА: Сайт вернул 429 (Too Many Requests)")
-                        logger.error("⏳ Ожидание 10 минут перед попыткой...")
-                        time.sleep(600)  # 10 минут
-                        self.driver.refresh()
+                    self.attempt_counter += 1
+                    
+                    logger.info(f"\n#{self.attempt_counter} ПОПЫТКА ПОИСКА")
+                    logger.debug("-" * 60)
+                    
+                    # Задержка между попытками для anti-detection (4-7 сек как в v1.0)
+                    time.sleep(randrange(4, 7))
+                    
+                    # ВАЖНО: Проверяем блокировку перед каждой попыткой
+                    # guard_blocking_states() автоматически ждет нужное время и перезагружает страницу
+                    if guard_blocking_states(self.driver, self.start_url):
+                        logger.info("↻ Блокировка обнаружена и обработана, продолжаю...")
                         continue
-                except Exception as e:
-                    logger.debug(f"Ошибка при проверке блокировки: {e}")
-                
-                # 1. Проверяем блокирующие состояния
-                if self.check_blocking_states():
-                    logger.info("↻ Обнаружено блокирующее состояние, перезагружаю...")
-                    # Если блокировка - ждем дольше
-                    time.sleep(randrange(120, 180))  # 2-3 минуты
+                    
+                    # Проверяем дополнительно 429 в странице
+                    try:
+                        page_source = self.driver.page_source
+                        if "429" in page_source or "Too Many Requests" in page_source:
+                            logger.error("⛔ БЛОКИРОВКА: Сайт вернул 429 (Too Many Requests)")
+                            logger.error("⏳ Ожидание 10 минут перед попыткой...")
+                            time.sleep(600)  # 10 минут
+                            self.driver.get(self.start_url)
+                            continue
+                    except Exception as e:
+                        logger.debug(f"Ошибка при проверке блокировки: {e}")
+                    
+                    # 1. Закрываем cookie popup
+                    self.close_cookie_popup(actions)
+                    
+                    # Случайная задержка
+                    time.sleep(randrange(3, 6))
+                    
+                    # 2. Выбираем провинцию и нажимаем Accept
+                    self.select_provincia_and_accept(actions)
+                    
+                    # 3. Выбираем офис и услугу
+                    self.select_oficina_and_tramite(actions)
+                    
+                    # 4. Вводим данные лица
+                    self.enter_person_data(actions)
+                    
+                    # 5. Отправляем форму
+                    self.submit_form(actions)
+                    
+                    # 6. Проверяем доступность цитаций
+                    citations_found = self.check_citations_available(actions)
+                    
+                    if citations_found:
+                        # ЦИТАЦИИ НАЙДЕНЫ!
+                        self.handle_citations_found()
+                        # Ждём перед перезагрузкой
+                        time.sleep(60)
+                    else:
+                        # Нет цитаций, перезагружаем
+                        self.exit_and_restart(actions)
+                    
+                except RestartLoopException as e:
+                    logger.debug(f"[ANTI-BLOCKING] RestartLoop: {e}")
+                    time.sleep(randrange(60, 120))  # 1-2 минуты между попытками
                     continue
                 
-                # 2. Закрываем cookie popup
-                self.close_cookie_popup(actions)
-                
-                # Случайная задержка
-                time.sleep(randrange(3, 6))
-                
-                # 3. Выбираем провинцию и нажимаем Accept
-                self.select_provincia_and_accept(actions)
-                
-                # 4. Выбираем офис и услугу
-                self.select_oficina_and_tramite(actions)
-                
-                # 5. Вводим данные лица
-                self.enter_person_data(actions)
-                
-                # 6. Отправляем форму
-                self.submit_form(actions)
-                
-                # 7. Проверяем доступность цитаций
-                citations_found = self.check_citations_available(actions)
-                
-                if citations_found:
-                    # ЦИТАЦИИ НАЙДЕНЫ!
-                    self.handle_citations_found()
-                    # Ждём перед перезагрузкой
-                    time.sleep(60)
-                else:
-                    # Нет цитаций, перезагружаем
-                    self.exit_and_restart(actions)
-                
-            except RestartLoop as e:
-                logger.debug(f"🔄 RestartLoop: {e}")
-                time.sleep(randrange(60, 65))
-                continue
-                
+                except RestartLoop as e:
+                    logger.debug(f"🔄 RestartLoop: {e}")
+                    time.sleep(randrange(60, 120))  # 1-2 минуты между попытками
+                    continue
+                    
+                except Exception as e:
+                    logger.error(f"❌ Неожиданная ошибка в цикле: {type(e).__name__}: {e}")
+                    logger.debug("Перезагружаю через 30 секунд...")
+                    time.sleep(30)
+                    continue
+        
+        except KeyboardInterrupt:
+            logger.warning("\n\n⚠️ ПОИСК ОСТАНОВЛЕН ПОЛЬЗОВАТЕЛЕМ (Ctrl+C)")
+            logger.warning("🔚 Закрываю браузер...")
+            try:
+                self.driver.quit()
+                logger.info("✅ Браузер закрыт")
             except Exception as e:
-                logger.error(f"❌ Неожиданная ошибка в цикле: {type(e).__name__}: {e}")
-                logger.debug("Перезагружаю через 30 секунд...")
-                time.sleep(30)
-                continue
+                logger.warning(f"⚠️ Ошибка при закрытии браузера: {e}")
+            return None

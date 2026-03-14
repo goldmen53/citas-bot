@@ -1,9 +1,0 @@
-version: '3.8'
-services:
-  citas-bot:
-    build: .
-    container_name: citas_bot_container
-    restart: always  # ГЛАВНОЕ: перезапуск контейнера при любом сбое
-    shm_size: '2gb'  # Важно для Chrome, чтобы не падал из-за нехватки памяти
-    volumes:
-      - .:/app

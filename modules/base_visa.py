@@ -4,6 +4,7 @@
 """
 
 import time
+from random import randrange
 from abc import ABC, abstractmethod
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -60,7 +61,11 @@ class BaseVisa(ABC):
             logger.info(f"✓ Нажимаю кнопку: {button_name}")
             
             actions.move_to_element(button).click().perform()
-            time.sleep(wait_time)
+            
+            # Случайная задержка для anti-detection (как в v1.0)
+            # После клика по кнопке используем случайную задержку вместо фиксированной
+            delay = randrange(int(wait_time * 1000), int(wait_time * 2000)) / 1000.0
+            time.sleep(delay if wait_time > 0.5 else wait_time)
             
             return False  # Успех
             
@@ -137,11 +142,17 @@ class BaseVisa(ABC):
             # Очищаем поле
             input_element.clear()
             
-            # Вводим текст
-            input_element.send_keys(text)
+            # Вводим текст с паузами для anti-detection
+            # Имитируем медленный ввод как человек
+            for char in text:
+                input_element.send_keys(char)
+                # Случайная пауза между символами (20-100 мс)
+                time.sleep(randrange(20, 100) / 1000.0)
+            
             logger.info(f"✓ В поле '{field_name}' введено: {text[:20]}..." if len(text) > 20 else f"✓ В поле '{field_name}' введено: {text}")
             
-            time.sleep(0.2)
+            # Пауза после завершения ввода
+            time.sleep(randrange(100, 300) / 1000.0)
             return False  # Успех
             
         except TimeoutException:
